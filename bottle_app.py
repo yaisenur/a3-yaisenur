@@ -5,7 +5,8 @@
 ### The landing page for assignment 3 should be at /
 #####################################################################
 
-from bottle import route, run, default_app, debug
+from bottle import route, run, default_app, debug,request
+from csv import reader
 
 def htmlify(title,text):
     page = """
@@ -24,10 +25,51 @@ def htmlify(title,text):
     return page
 
 def index():
-    return htmlify("My lovely website",
-                   "This is going to be an awesome website, when it is finished.")
+
+
+    return htmlify("Statistic of the weather pollution",
+    """
+
+    <form action="/">
+      City:<br>
+      <input type="text" name="city" value="" placeholder="City">
+      <br>
+      Year:<br>
+      <input type="text" name="year" value="" placeholder="Year">
+      <br><br>
+      <input type="submit" value="Submit">
+    </form>
+
+    <p>If you click the "Submit" button, the form-data will be shown.</p>
+    """)
+
+def filt():
+    if request.forms.get('city'):
+        city = request.forms.get('city')
+
+    contents = []
+    input_file = open("input.csv","r")
+    for row in reader(input_file):
+        contents = contents + [row]
+    table = ""
+    #for row in contents:
+    for j in range(0,595):
+        table += "<tr>"
+        for i in range(0,9):
+            if(i == 6):continue
+            table += "<td style='width:120px''>"
+            table += contents[j][i]
+            table += "</td>"
+    table += "<tr>"
+    return htmlify("sonuclar",
+    """
+    <table>
+        {}
+    </table>""".format(table))
+
 
 route('/', 'GET', index)
+route('/index','POST',filt)
 
 #####################################################################
 ### Don't alter the below code.
@@ -42,4 +84,3 @@ app = default_app()
 # The below code is necessary for running this bottle app standalone on your computer.
 if __name__ == "__main__":
   run()
-
